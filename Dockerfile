@@ -6,6 +6,7 @@ EXPOSE 80
 EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:3.1 AS build
+ARG BuildConfiguration=Debug
 WORKDIR /src
 COPY ["TrainingHangfire/TrainingHangfire.csproj", "TrainingHangfire/"]
 COPY ["TrainingHangfire.Service/TrainingHangfire.Service.csproj", "TrainingHangfire.Service/"]
@@ -14,10 +15,11 @@ COPY ["TrainingHangfire.Common/TrainingHangfire.Common.csproj", "TrainingHangfir
 RUN dotnet restore "TrainingHangfire/TrainingHangfire.csproj"
 COPY . .
 WORKDIR "/src/TrainingHangfire"
-RUN dotnet build "TrainingHangfire.csproj" -c Release -o /app/build
+RUN dotnet build "TrainingHangfire.csproj" -c $BuildConfiguration -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "TrainingHangfire.csproj" -c Release -o /app/publish
+ARG BuildConfiguration=Debug
+RUN dotnet publish "TrainingHangfire.csproj" -c $BuildConfiguration -o /app/publish
 
 FROM base AS final
 WORKDIR /app
