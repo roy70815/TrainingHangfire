@@ -48,6 +48,13 @@ namespace TrainingHangfireRepositoryTests.Helper.Database
             return new SqlConnection(connectionString);
         }
 
+        public IDbConnection GetDBConnection(string databaseName)
+        {
+            var connectionString = @$"Server=localhost,{DockerHandler._linux_mssql_port} Initial Catalog={databaseName}; 
+                                    User ID=sa; Password=!@#QWEasd; Trusted_Connection=True; Integrated Security = false;";
+
+            return new SqlConnection(connectionString);
+        }
         private bool IsDatabaseExist(string databaseName)
         {
             using (var connection = GetMasterDBConnection())

@@ -10,5 +10,6 @@ namespace TrainingHangfireRepositoryTests.Helper.Database
         void CreateDatabase();
         void DropDatabase();
         IDbConnection GetMasterDBConnection();
+        IDbConnection GetDBConnection(string databaseName);
     }
 }
