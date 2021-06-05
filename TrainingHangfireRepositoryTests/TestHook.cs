@@ -1,4 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading.Tasks;
 using TrainingHangfire.Common.Helpers.DapperHelper;
 using TrainingHangfireRepositoryTests.Helper.Database;
 
@@ -8,17 +9,17 @@ namespace TrainingHangfireRepositoryTests
     public class TestHook
     {
         [AssemblyInitialize]
-        public static void AssemblyInitialize(TestContext context)//TestContext 不加會錯
+        public static async Task AssemblyInitialize(TestContext context)//TestContext 不加會錯
         {
             var testDbHelper = new TestDatabase();
-            testDbHelper.CreateDatabase();
+            await testDbHelper.CreateDatabase();
         }
 
         [AssemblyCleanup]
-        public static void AssemblyCleanup()
+        public static async Task AssemblyCleanup()
         {
             var testDbHelper = new TestDatabase();
-            testDbHelper.DropDatabase();
+            await testDbHelper.DropDatabase();
         }
 
         public static ITestDatabase GetTestDatabase()

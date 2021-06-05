@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace TrainingHangfireRepositoryTests.Helper
 {
@@ -14,26 +15,29 @@ namespace TrainingHangfireRepositoryTests.Helper
         private static string _linux_mssql_containerneme = "testsmssql";
 
         public static string _linux_mssql_port = "12345";
-        public static bool CreateContainer()
+        public static async Task<bool> CreateContainer()
         {
-            if (!CheckMSSQLImage())
+            if (!await CheckMSSQLImage())
             {
                 throw new InvalidOperationException("no mcr.microsoft.com/mssql/server images");
             }
 
-            RemoveExistContainer();
-            var cmd = new Cli("docker")
-                .SetArguments($@"run --name {_linux_mssql_containerneme} -e SA_PASSWORD=!@#QWEasd -e ACCEPT_EULA=Y -p {_linux_mssql_port}:1433 -d {_linux_mssql_images}")
-                .Execute();
+            await RemoveExistContainer();
+            await Cli.Wrap("docker")
+                .WithArguments($@"run --name {_linux_mssql_containerneme} -e SA_PASSWORD=!@#QWEasd -e ACCEPT_EULA=Y -p {_linux_mssql_port}:1433 -d {_linux_mssql_images}")
+                .ExecuteAsync();
+            
             var containerReadyLog = "The default language (LCID 0) has been set for engine and full-text services.";//"Service Broker manager has started.";
 
             var retrySecond = 120;
             for (int i = 0; i < retrySecond; i++)
             {
-                cmd = new Cli("docker")
-                    .SetArguments($" logs {_linux_mssql_containerneme}")
-                    .Execute();
-                var logs = cmd.StandardOutput;
+                var logsStrBuider = new StringBuilder();
+                await Cli.Wrap("docker")
+                .WithArguments($" logs {_linux_mssql_containerneme}")
+                .WithStandardOutputPipe(PipeTarget.ToStringBuilder(logsStrBuider))
+                .ExecuteAsync();
+                var logs = logsStrBuider.ToString();
                 if (logs.Contains(containerReadyLog))
                 {
                     return true;
@@ -44,26 +48,27 @@ namespace TrainingHangfireRepositoryTests.Helper
             return false;
         }
 
-        public static void RemoveExistContainer()
+        public static async Task RemoveExistContainer()
         {
-            var cmd = new Cli("docker")
-                .SetArguments($" stop {_linux_mssql_containerneme}")
-                .EnableExitCodeValidation(false)//在非零退出馬上拋出異常(預設是true)
-                .EnableStandardErrorValidation(false)//在非零退出馬上拋出異常(預設是true)
-                .Execute();
-
-            cmd = new Cli("docker")
-                .SetArguments($" rm {_linux_mssql_containerneme}")
-                .EnableExitCodeValidation(false)
-                .EnableStandardErrorValidation(false)
-                .Execute();
+            await Cli.Wrap("docker")
+               .WithArguments($" stop {_linux_mssql_containerneme}")
+               .WithValidation(CommandResultValidation.None)//忽略非0代碼
+               .ExecuteAsync();
+            
+            await Cli.Wrap("docker")
+               .WithArguments($" rm {_linux_mssql_containerneme}")
+               .WithValidation(CommandResultValidation.None)//忽略非0代碼
+               .ExecuteAsync();
         }
-        private static bool CheckMSSQLImage()
+        private static async Task<bool> CheckMSSQLImage()
         {
-            var cmd = new Cli("docker")
-                        .SetArguments($" images {_linux_mssql_images}")
-                        .Execute();
-            using (var reader = new StringReader(cmd.StandardOutput))
+            var imagesStrBuilder = new StringBuilder();
+            await Cli.Wrap("docker")
+               .WithArguments($" images {_linux_mssql_images}")
+               .WithStandardOutputPipe(PipeTarget.ToStringBuilder(imagesStrBuilder))
+               .ExecuteAsync();
+            
+            using (var reader = new StringReader(imagesStrBuilder.ToString()))
             {
                 string line;
                 while ((line = reader.ReadLine())!= null)

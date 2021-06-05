@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace TrainingHangfireRepositoryTests.Helper.Database
 {
@@ -13,9 +14,9 @@ namespace TrainingHangfireRepositoryTests.Helper.Database
         {
             "Stock"
         };
-        public void CreateDatabase()
+        public async Task CreateDatabase()
         {
-            DockerHandler.CreateContainer();
+            await DockerHandler.CreateContainer();
 
             foreach (var databaseName in _databaseNames)
             {
@@ -37,9 +38,9 @@ namespace TrainingHangfireRepositoryTests.Helper.Database
             }
         }
 
-        public void DropDatabase()
+        public async Task DropDatabase()
         {
-            DockerHandler.RemoveExistContainer();
+            await DockerHandler.RemoveExistContainer();
         }
 
         public IDbConnection GetMasterDBConnection()
