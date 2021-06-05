@@ -7,6 +7,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="TestData\Data\StockDailyQuotes.sql" />
+    <None Remove="TestData\Table\StockDailyQuotes.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="TestData\Data\StockDailyQuotes.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\Table\StockDailyQuotes.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoFixture" Version="4.17.0" />
     <PackageReference Include="CliWrap" Version="2.5.0" />
     <PackageReference Include="FluentAssertions" Version="5.10.3" />

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Text;
+using TrainingHangfire.Common.Constants;
 
 namespace TrainingHangfire.Common.Helpers.DatabaseHelper
 {
@@ -16,11 +17,11 @@ namespace TrainingHangfire.Common.Helpers.DatabaseHelper
             _configuration = configuration;
         }
 
-        public IDbConnection GetHangFireConnection() => GetConnectionString("HangFire");
+        public IDbConnection GetHangFireConnection() => GetConnectionString(ProjectConstants.DatabaseName.HangFire);
 
-        public IDbConnection GetLeetCodeConnection() => GetConnectionString("LeetCode");
+        public IDbConnection GetLeetCodeConnection() => GetConnectionString(ProjectConstants.DatabaseName.LeetCode);
 
-        public IDbConnection GetStockConnection() => GetConnectionString("Stock");
+        public IDbConnection GetStockConnection() => GetConnectionString(ProjectConstants.DatabaseName.Stock);
 
         private SqlConnection GetConnectionString(string dbName)
         {

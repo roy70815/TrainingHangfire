@@ -23,11 +23,7 @@ namespace TrainingHangfireRepositoryTests.Helper
 
             RemoveExistContainer();
             var cmd = new Cli("docker")
-                .SetArguments($@"run --name {_linux_mssql_containerneme} 
-                                -e SA_PASSWORD=!@#QWEasd 
-                                -e ACCEPT_EULA=Y 
-                                -p {_linux_mssql_port}:1433 
-                                -d {_linux_mssql_images}")
+                .SetArguments($@"run --name {_linux_mssql_containerneme} -e SA_PASSWORD=!@#QWEasd -e ACCEPT_EULA=Y -p {_linux_mssql_port}:1433 -d {_linux_mssql_images}")
                 .Execute();
             var containerReadyLog = "The default language (LCID 0) has been set for engine and full-text services.";//"Service Broker manager has started.";
 
@@ -66,7 +62,6 @@ namespace TrainingHangfireRepositoryTests.Helper
         {
             var cmd = new Cli("docker")
                         .SetArguments($" images {_linux_mssql_images}")
-                        .EnableExitCodeValidation(false)//不加會錯
                         .Execute();
             using (var reader = new StringReader(cmd.StandardOutput))
             {

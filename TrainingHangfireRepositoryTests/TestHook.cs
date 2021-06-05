@@ -1,4 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TrainingHangfire.Common.Helpers.DapperHelper;
 using TrainingHangfireRepositoryTests.Helper.Database;
 
 namespace TrainingHangfireRepositoryTests
@@ -18,6 +19,12 @@ namespace TrainingHangfireRepositoryTests
         {
             var testDbHelper = new TestDatabase();
             testDbHelper.DropDatabase();
+        }
+
+        public static ITestDatabase GetTestDatabase()
+        {
+            return new TestDatabase();
+
         }
     }
 }

@@ -26,10 +26,12 @@ namespace TrainingHangfireRepositoryTests.Helper.Database
 
                 using (var connection = GetMasterDBConnection())
                 {
-                    var sqlCommand = $"CREATE DATABASE @DatabaseName COLLATE Chinese_Taiwan_Stroke_CI_AI";
+                    var sqlCommand = $"CREATE DATABASE {databaseName} COLLATE Chinese_Taiwan_Stroke_CI_AI";
 
-                    var parameter = new DynamicParameters();
-                    parameter.Add("DatabaseName", databaseName);
+                    //用Dapper參數會錯
+                    //var parameter = new DynamicParameters();
+                    //parameter.Add("DatabaseName", databaseName);
+                    connection.Open();
                     connection.Execute(sqlCommand);
                 }
             }
@@ -42,7 +44,7 @@ namespace TrainingHangfireRepositoryTests.Helper.Database
 
         public IDbConnection GetMasterDBConnection()
         {
-            var connectionString = @$"Server=localhost,{DockerHandler._linux_mssql_port} Initial Catalog=master; 
+            var connectionString = @$"Server=localhost,{DockerHandler._linux_mssql_port}; Initial Catalog=master; 
                                     User ID=sa; Password=!@#QWEasd; Trusted_Connection=True; Integrated Security = false;";
 
             return new SqlConnection(connectionString);
@@ -50,7 +52,7 @@ namespace TrainingHangfireRepositoryTests.Helper.Database
 
         public IDbConnection GetDBConnection(string databaseName)
         {
-            var connectionString = @$"Server=localhost,{DockerHandler._linux_mssql_port} Initial Catalog={databaseName}; 
+            var connectionString = @$"Server=localhost,{DockerHandler._linux_mssql_port}; Initial Catalog={databaseName}; 
                                     User ID=sa; Password=!@#QWEasd; Trusted_Connection=True; Integrated Security = false;";
 
             return new SqlConnection(connectionString);
